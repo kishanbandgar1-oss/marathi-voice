@@ -126,6 +126,37 @@ class Eleven {
 }
 
 // ---------------------------------------------------------------------------
+// Saved voice model + storage (SharedPreferences, JSON list)
+// ---------------------------------------------------------------------------
+class SavedVoice {
+  String id; // ElevenLabs voice_id
+  String name; // e.g. "Mother", "Father"
+
+  SavedVoice(this.id, this.name);
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+  factory SavedVoice.fromJson(Map<String, dynamic> j) =>
+      SavedVoice(j['id'] as String, j['name'] as String);
+}
+
+class VoiceStore {
+  static const _key = 'saved_voices';
+
+  static List<SavedVoice> load(SharedPreferences p) {
+    final raw = p.getString(_key);
+    if (raw == null || raw.isEmpty) return [];
+    final list = jsonDecode(raw) as List;
+    return list
+        .map((e) => SavedVoice.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  static Future<void> save(SharedPreferences p, List<SavedVoice> voices) async {
+    await p.setString(_key, jsonEncode(voices.map((v) => v.toJson()).toList()));
+  }
+}
+
+// ---------------------------------------------------------------------------
 // App shell
 // ---------------------------------------------------------------------------
 class MyApp extends StatelessWidget {
