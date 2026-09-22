@@ -1,0 +1,19 @@
+name: marathi_voice
+description: Type Marathi text and hear it in a cloned voice.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.3.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  record: ^5.1.2
+  audioplayers: ^6.1.0
+  path_provider: ^2.1.4
+  shared_preferences: ^2.3.2
+
+flutter:
+  uses-material-design: true
