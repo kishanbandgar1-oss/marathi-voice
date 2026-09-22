@@ -22,11 +22,30 @@ jobs:
 
       - name: Generate Android project and build APK
         run: |
+          set -e
           flutter --version
+          echo "Repository contents:"
+          find . -maxdepth 3 -type f | grep -v '^\./\.git'
+
+          MAIN_DART=$(find . -iname 'main.dart' -print -quit)
+          PUBSPEC=$(find . -iname 'pubspec.yaml' -print -quit)
+
+          if [ -z "$MAIN_DART" ]; then
+            echo "ERROR: could not find main.dart anywhere in the repository."
+            exit 1
+          fi
+          if [ -z "$PUBSPEC" ]; then
+            echo "ERROR: could not find pubspec.yaml anywhere in the repository."
+            exit 1
+          fi
+          echo "Using main.dart at: $MAIN_DART"
+          echo "Using pubspec.yaml at: $PUBSPEC"
+
           flutter create --org com.marathivoice --project-name marathi_voice --platforms=android app_build
           rm -rf app_build/lib
-          cp -r lib app_build/lib
-          cp pubspec.yaml app_build/pubspec.yaml
+          mkdir app_build/lib
+          cp "$MAIN_DART" app_build/lib/main.dart
+          cp "$PUBSPEC" app_build/pubspec.yaml
           cd app_build
           M=android/app/src/main/AndroidManifest.xml
           sed -i 's#<application#<uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.RECORD_AUDIO"/>\n    <application#' "$M"
